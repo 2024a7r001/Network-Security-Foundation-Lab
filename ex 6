@@ -1,0 +1,66 @@
+# Implementing Network Address Translation (NAT)
+
+## Objective
+Configure Network Address Translation (NAT) to allow internal devices to access external networks using a single public IP address.
+
+## Tools Used
+- Cisco Packet Tracer
+- Cisco Router
+- Cisco Switch
+- PCs
+
+## Theory
+Network Address Translation (NAT) is used to translate private IP addresses into a public IP address. It allows multiple devices in a private network to access external networks such as the Internet while conserving public IP addresses.
+
+## Network Example
+Internal Network: 192.168.1.0/24  
+Public IP: 200.1.1.1  
+
+## Procedure
+
+### Step 1: Enter Privileged Mode
+
+Router> enable
+
+
+### Step 2: Enter Global Configuration Mode
+
+Router# configure terminal
+
+
+### Step 3: Configure Inside Interface
+
+interface fastEthernet0/0
+ip address 192.168.1.1 255.255.255.0
+ip nat inside
+no shutdown
+exit
+
+
+### Step 4: Configure Outside Interface
+
+interface fastEthernet0/1
+ip address 200.1.1.1 255.255.255.0
+ip nat outside
+no shutdown
+exit
+
+
+### Step 5: Create Access List for Internal Network
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+
+
+### Step 6: Configure NAT Overload
+
+ip nat inside source list 1 interface fastEthernet0/1 overload
+
+
+### Step 7: Verify NAT Configuration
+
+show ip nat translations
+show ip nat statistics
+
+
+## Result
+NAT successfully configured allowing internal devices to access external networks.
