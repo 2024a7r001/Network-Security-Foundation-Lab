@@ -1,0 +1,47 @@
+# Basic Network Configuration (Cisco)
+
+## Objective
+Learn to configure basic network settings on Cisco devices such as routers and switches.
+
+## Tools Used
+- Cisco Packet Tracer
+- Cisco Router
+- Cisco Switch
+- PC
+
+## Configuration Steps
+
+### Enter Privileged Mode
+
+Router> enable
+
+
+### Enter Global Configuration
+
+Router# configure terminal
+
+
+### Set Hostname
+
+Router(config)# hostname R1
+
+
+### Configure Interface
+
+R1(config)# interface fastethernet0/0
+R1(config-if)# ip address 192.168.1.1 255.255.255.0
+R1(config-if)# no shutdown
+
+
+### Save Configuration
+
+R1# copy running-config startup-config
+
+
+## Verification
+
+show ip interface brief
+
+
+## Result
+Successfully configured basic network settings on Cisco router.
