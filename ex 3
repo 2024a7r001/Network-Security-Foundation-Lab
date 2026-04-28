@@ -1,5 +1,6 @@
 # Inter-VLAN Routing
 
+
 ## Objective
 Enable communication between different VLANs using a router (Router-on-a-Stick method).
 
