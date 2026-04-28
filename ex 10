@@ -1,0 +1,57 @@
+# ipsec_simulation.tcl
+# NS2 simulation to analyze performance of a secure (IPsec-like) connection
+
+# Create simulator
+set ns [new Simulator]
+
+# Open trace and NAM files
+set tracefile [open ipsec.tr w]
+$ns trace-all $tracefile
+
+set namfile [open ipsec.nam w]
+$ns namtrace-all $namfile
+
+# Create nodes
+set sender [$ns node]
+set router [$ns node]
+set receiver [$ns node]
+
+# Create links
+$ns duplex-link $sender $router 1Mb 20ms DropTail
+$ns duplex-link $router $receiver 1Mb 20ms DropTail
+
+# Create TCP agent (representing secure IPsec tunnel traffic)
+set tcp [new Agent/TCP]
+$tcp set class_ 2
+$ns attach-agent $sender $tcp
+
+# Create TCP sink
+set sink [new Agent/TCPSink]
+$ns attach-agent $receiver $sink
+
+# Connect TCP agents
+$ns connect $tcp $sink
+
+# Create FTP application (data transfer)
+set ftp [new Application/FTP]
+$ftp attach-agent $tcp
+
+# Start and stop transmission
+$ns at 1.0 "$ftp start"
+$ns at 4.0 "$ftp stop"
+
+# Finish procedure
+proc finish {} {
+    global ns tracefile namfile
+    $ns flush-trace
+    close $tracefile
+    close $namfile
+    exec nam ipsec.nam &
+    exit 0
+}
+
+# End simulation
+$ns at 5.0 "finish"
+
+# Run simulation
+$ns run
