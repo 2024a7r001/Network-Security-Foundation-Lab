@@ -1,0 +1,54 @@
+# Create simulator object
+set ns [new Simulator]
+
+# Open trace file
+set tracefile [open out.tr w]
+$ns trace-all $tracefile
+
+# Open NAM file
+set namfile [open out.nam w]
+$ns namtrace-all $namfile
+
+# Create two nodes
+set n0 [$ns node]
+set n1 [$ns node]
+
+# Create a link between nodes
+$ns duplex-link $n0 $n1 1Mb 10ms DropTail
+
+# Create UDP agent
+set udp [new Agent/UDP]
+$ns attach-agent $n0 $udp
+
+# Create Null agent (receiver)
+set null [new Agent/Null]
+$ns attach-agent $n1 $null
+
+# Connect agents
+$ns connect $udp $null
+
+# Create CBR traffic
+set cbr [new Application/Traffic/CBR]
+$cbr set packetSize_ 500
+$cbr set interval_ 0.01
+$cbr attach-agent $udp
+
+# Start and stop traffic
+$ns at 1.0 "$cbr start"
+$ns at 4.0 "$cbr stop"
+
+# Finish procedure
+proc finish {} {
+    global ns tracefile namfile
+    $ns flush-trace
+    close $tracefile
+    close $namfile
+    exec nam out.nam &
+    exit 0
+}
+
+# End simulation
+$ns at 5.0 "finish"
+
+# Run simulation
+$ns run
