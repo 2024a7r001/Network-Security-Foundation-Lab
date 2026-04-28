@@ -1,0 +1,75 @@
+# dos_attack_simulation.tcl
+# NS2 Simulation of a simple DoS attack
+
+# Create simulator
+set ns [new Simulator]
+
+# Open trace and NAM files
+set tracefile [open dos.tr w]
+$ns trace-all $tracefile
+
+set namfile [open dos.nam w]
+$ns namtrace-all $namfile
+
+# Create nodes
+set attacker [$ns node]
+set normal [$ns node]
+set router [$ns node]
+set victim [$ns node]
+
+# Create links
+$ns duplex-link $attacker $router 1Mb 10ms DropTail
+$ns duplex-link $normal $router 1Mb 10ms DropTail
+$ns duplex-link $router $victim 512Kb 20ms DropTail
+
+# UDP agent for attacker
+set udp_attacker [new Agent/UDP]
+$ns attach-agent $attacker $udp_attacker
+
+# UDP agent for normal user
+set udp_normal [new Agent/UDP]
+$ns attach-agent $normal $udp_normal
+
+# Sink at victim
+set null_victim [new Agent/Null]
+$ns attach-agent $victim $null_victim
+
+# Connect agents
+$ns connect $udp_attacker $null_victim
+$ns connect $udp_normal $null_victim
+
+# DoS attack traffic (high rate)
+set dos [new Application/Traffic/CBR]
+$dos set packetSize_ 1000
+$dos set interval_ 0.001
+$dos attach-agent $udp_attacker
+
+# Normal traffic
+set normal_traffic [new Application/Traffic/CBR]
+$normal_traffic set packetSize_ 500
+$normal_traffic set interval_ 0.05
+$normal_traffic attach-agent $udp_normal
+
+# Start traffic
+$ns at 0.5 "$normal_traffic start"
+$ns at 1.0 "$dos start"
+
+# Stop traffic
+$ns at 4.0 "$normal_traffic stop"
+$ns at 4.5 "$dos stop"
+
+# Finish procedure
+proc finish {} {
+    global ns tracefile namfile
+    $ns flush-trace
+    close $tracefile
+    close $namfile
+    exec nam dos.nam &
+    exit 0
+}
+
+# End simulation
+$ns at 5.0 "finish"
+
+# Run simulation
+$ns run
