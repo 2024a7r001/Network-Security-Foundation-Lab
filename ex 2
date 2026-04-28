@@ -1,0 +1,60 @@
+# Configuring VLANs
+
+## Course
+COM-412 Network Foundation Lab
+
+## Objective
+Implement Virtual LANs (VLANs) to segment network traffic in a network using a Cisco switch.
+
+## Tools Used
+- Cisco Packet Tracer
+- Cisco Switch
+- PCs
+- Ethernet Cables
+
+## Theory
+A VLAN (Virtual Local Area Network) is used to logically divide a network into multiple broadcast domains. VLANs improve network security and reduce unnecessary traffic.
+
+## Procedure
+
+### Step 1: Enter Privileged Mode
+
+Switch> enable
+
+
+### Step 2: Enter Global Configuration Mode
+
+Switch# configure terminal
+
+
+### Step 3: Create VLANs
+
+Switch(config)# vlan 10
+Switch(config-vlan)# name SALES
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 20
+Switch(config-vlan)# name HR
+Switch(config-vlan)# exit
+
+
+### Step 4: Assign Ports to VLANs
+
+Switch(config)# interface fastEthernet 0/1
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 10
+Switch(config-if)# exit
+
+Switch(config)# interface fastEthernet 0/2
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 20
+Switch(config-if)# exit
+
+
+### Step 5: Verify VLAN Configuration
+
+Switch# show vlan brief
+
+
+## Result
+VLANs were successfully created and ports were assigned to segment network traffic.
