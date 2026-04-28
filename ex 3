@@ -1,0 +1,86 @@
+# Inter-VLAN Routing
+
+## Course
+COM-412 Network Foundation Lab
+
+## Objective
+Enable communication between different VLANs using a router (Router-on-a-Stick method).
+
+## Tools Used
+- Cisco Packet Tracer
+- Cisco Router
+- Cisco Switch
+- PCs
+- Ethernet Cables
+
+## Theory
+Inter-VLAN Routing allows devices in different VLANs to communicate with each other. 
+This is commonly implemented using a router with subinterfaces connected to a switch trunk port.
+
+## Network Example
+VLAN 10 → 192.168.10.0/24  
+VLAN 20 → 192.168.20.0/24  
+
+## Procedure
+
+### Step 1: Create VLANs on Switch
+
+Switch> enable
+Switch# configure terminal
+
+vlan 10
+name SALES
+exit
+
+vlan 20
+name HR
+exit
+
+
+### Step 2: Assign Ports to VLANs
+
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+exit
+
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+exit
+
+
+### Step 3: Configure Trunk Port
+
+interface fastEthernet 0/24
+switchport mode trunk
+exit
+
+
+### Step 4: Configure Router Subinterfaces
+
+Router> enable
+Router# configure terminal
+
+interface fastEthernet0/0.10
+encapsulation dot1Q 10
+ip address 192.168.10.1 255.255.255.0
+exit
+
+interface fastEthernet0/0.20
+encapsulation dot1Q 20
+ip address 192.168.20.1 255.255.255.0
+exit
+
+interface fastEthernet0/0
+no shutdown
+
+
+### Step 5: Verify Configuration
+
+show ip interface brief
+show vlan brief
+
+
+## Result
+Inter-VLAN routing was successfully configured, allowing communication between devices in diffe
